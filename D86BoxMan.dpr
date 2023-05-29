@@ -6,7 +6,8 @@ uses
   Forms.About in 'Forms.About.pas' {AboutForm},
   Forms.AddVM in 'Forms.AddVM.pas' {AddVMForm},
   VM.Manager in 'VM.Manager.pas',
-  VM.Machine in 'VM.Machine.pas';
+  VM.Machine in 'VM.Machine.pas',
+  VM.Emulator in 'VM.Emulator.pas';
 
 {$R *.res}
 
@@ -14,11 +15,11 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TAddVMForm, AddVMForm);
-
+  {$WARN SYMBOL_PLATFORM OFF}
   {$IFDEF DEBUG}
-  ReportMemoryLeaksOnShutdown := True;
+  ReportMemoryLeaksOnShutdown := (DebugHook <> 0);
   {$ENDIF}
+  {$WARN SYMBOL_PLATFORM ON}
 
   Application.Run;
 end.

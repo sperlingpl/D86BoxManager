@@ -10,18 +10,33 @@ object MainForm: TMainForm
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     561
     366)
   TextHeight = 15
-  object ListView1: TListView
+  object LvMachines: TListView
     Left = 8
     Top = 40
     Width = 545
     Height = 318
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Columns = <>
+    Columns = <
+      item
+        Caption = 'Name'
+        Width = 200
+      end
+      item
+        Caption = 'Status'
+        Width = 100
+      end>
+    ReadOnly = True
+    RowSelect = True
     TabOrder = 0
+    ViewStyle = vsReport
+    ExplicitWidth = 541
+    ExplicitHeight = 317
   end
   object Button1: TButton
     Left = 478

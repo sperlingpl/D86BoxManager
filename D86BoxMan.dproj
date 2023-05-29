@@ -114,6 +114,7 @@
         </DCCReference>
         <DCCReference Include="VM.Manager.pas"/>
         <DCCReference Include="VM.Machine.pas"/>
+        <DCCReference Include="VM.Emulator.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

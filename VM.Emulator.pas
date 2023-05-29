@@ -16,16 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 }
 
-unit VM.Machine;
+unit VM.Emulator;
 
 interface
 
 type
-  TVirtualMachine = class
+  TEmulator = class
   public
-    Name: String;
-    Description: String;
+    Path: String;
   end;
+
 
 implementation
 
