@@ -1,4 +1,4 @@
-﻿{
+{
     D86Box Manager - Simple 86Box emulator manager
     Copyright (C) 2023  Paweł Wróblewski
 
@@ -16,17 +16,29 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 }
 
-unit VM.Machine;
+program D86BoxMan;
 
-interface
+{$mode ObjFPC}{$H+}
 
-type
-  TVirtualMachine = class
-  public
-    Name: String;
-    Description: String;
-  end;
+uses
+  {$IFDEF UNIX}
+  Cthreads,
+  {$ENDIF}
+  {$IFDEF HASAMIGA}
+  Athreads,
+  {$ENDIF}
+  Interfaces, // this includes the LCL widgetset
+  Forms, uMainForm, uAddMachineForm, uVMManager, uPathHelper, uEmulatorsForm,
+  uConfigManager
+  { you can add units after this };
 
-implementation
+{$R *.res}
 
+begin
+  RequireDerivedFormResource := True;
+  Application.Scaled := True;
+  Application.Initialize;
+  Application.CreateForm(TMainForm, Mainform);
+  Application.Run;
 end.
+

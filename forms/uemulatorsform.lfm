@@ -1,0 +1,8 @@
+object EmulatorsForm: TEmulatorsForm
+  Left = 256
+  Height = 252
+  Top = 131
+  Width = 471
+  Caption = 'EmulatorsForm'
+  LCLVersion = '2.2.6.0'
+end

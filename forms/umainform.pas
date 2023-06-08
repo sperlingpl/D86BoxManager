@@ -1,4 +1,4 @@
-﻿{
+{
     D86Box Manager - Simple 86Box emulator manager
     Copyright (C) 2023  Paweł Wróblewski
 
@@ -16,36 +16,55 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 }
 
-unit Forms.About;
+unit uMainForm;
+
+{$mode ObjFPC}{$H+}
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Classes, Sysutils, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  laz.VirtualTrees;
 
 type
-  TAboutForm = class(TForm)
-    GroupBox1: TGroupBox;
-    Button1: TButton;
-    Label1: TLabel;
+
+  { TMainForm }
+
+  TMainForm = class(Tform)
+    Button1: Tbutton;
+    Button2: Tbutton;
+    Button3: Tbutton;
+    Groupbox1: Tgroupbox;
+    Lazvirtualstringtree1: Tlazvirtualstringtree;
     procedure Button1Click(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
+    procedure FormCreate(Sender: TObject);
+  Private
+
+  Public
+
   end;
 
 var
-  AboutForm: TAboutForm;
+  MainForm: TMainForm;
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
-procedure TAboutForm.Button1Click(Sender: TObject);
+uses
+  uAddMachineForm, uConfigManager, uVMManager, fpjson;
+
+{ TMainForm }
+
+procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  Close;
+  TAddMachineForm.Execute(nil);
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  ConfigManager.Load;
 end;
 
 end.
+

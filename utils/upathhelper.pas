@@ -1,4 +1,4 @@
-﻿{
+{
     D86Box Manager - Simple 86Box emulator manager
     Copyright (C) 2023  Paweł Wróblewski
 
@@ -16,17 +16,32 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 }
 
-unit VM.Emulator;
+unit uPathHelper;
+
+{$mode ObjFPC}{$H+}
 
 interface
 
-type
-  TEmulator = class
-  public
-    Path: String;
-  end;
+uses
+  Classes, SysUtils;
 
+const AppDataFolderName = 'D86BoxManager';
+const ConfigFileName = 'config.json';
+
+function GetAppDataFolderPath: String;
+function GetConfigFilePath: String;
 
 implementation
 
+function GetAppDataFolderPath: String;
+begin
+  Result := ConcatPaths([GetEnvironmentVariable('appdata'), AppDataFolderName]);
+end;
+
+function GetConfigFilePath: String;
+begin
+  Result := ConcatPaths([GetAppDataFolderPath, ConfigFileName]);
+end;
+
 end.
+
