@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 252
+  Left = 615
   Height = 460
-  Top = 132
+  Top = 238
   Width = 640
   Caption = 'MainForm'
   ClientHeight = 460
@@ -23,6 +23,7 @@ object MainForm: TMainForm
     Top = 8
     Width = 75
     Caption = 'Button2'
+    OnClick = Button2Click
     TabOrder = 1
   end
   object Button3: TButton

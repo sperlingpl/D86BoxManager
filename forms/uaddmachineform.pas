@@ -23,7 +23,7 @@ unit uAddMachineForm;
 interface
 
 uses
-  Classes, Sysutils, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, Sysutils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls;
 
 type
 
@@ -34,19 +34,20 @@ type
     BtnOk: Tbutton;
     BtnAddEmulator: Tbutton;
     CbEmulators: Tcombobox;
-    EdtName: Tedit;
-    EdtDescription: Tedit;
     Groupbox1: Tgroupbox;
     Groupbox2: Tgroupbox;
+    EdtName: TLabeledEdit;
+    EdtDescription: TLabeledEdit;
     LblEmulators: Tlabel;
-    LblName: Tlabel;
-    LblDescription: Tlabel;
+    procedure BtnAddEmulatorClick(Sender: TObject);
     procedure BtnCancelClick(Sender: TObject);
     procedure BtnOkClick(Sender: TObject);
+    procedure CbEmulatorsChange(Sender: TObject);
     procedure EdtNameChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   Private
     procedure Validate;
+    procedure FillEmulators;
   Public
     class procedure Execute(AOwner: TComponent);
   end;
@@ -56,7 +57,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uVMManager, uConfigManager;
+  uVMManager, uConfigManager, uAddEmulatorForm;
 
 var
   AddMachineForm: TAddMachineForm;
@@ -66,6 +67,12 @@ var
 procedure TAddMachineForm.BtnCancelClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TAddMachineForm.BtnAddEmulatorClick(Sender: TObject);
+begin
+  TAddEmulatorForm.Execute(nil);
+  FillEmulators;
 end;
 
 procedure TAddMachineForm.BtnOkClick(Sender: TObject);
@@ -88,6 +95,11 @@ begin
   end;
 end;
 
+procedure TAddMachineForm.CbEmulatorsChange(Sender: TObject);
+begin
+  Validate;
+end;
+
 procedure TAddMachineForm.EdtNameChange(Sender: TObject);
 begin
   Validate;
@@ -95,12 +107,40 @@ end;
 
 procedure TAddMachineForm.FormCreate(Sender: TObject);
 begin
+  FillEmulators;
   Validate;
 end;
 
 procedure TAddMachineForm.Validate;
 begin
-  BtnOk.Enabled := Trim(EdtName.Text) <> '';
+  BtnOk.Enabled := (Trim(EdtName.Text) <> '') and (CbEmulators.ItemIndex >= 0);
+end;
+
+procedure TAddMachineForm.FillEmulators;
+var
+  Emulator: TEmulator;
+  TypeString: String;
+begin
+  CbEmulators.Clear;
+
+  for Emulator in VMManager.Emulators do
+  begin
+    if Emulator.Imported then
+    begin
+      TypeString := 'Imported'
+    end else
+    begin
+      if Emulator.Release then
+        TypeString := 'Release'
+      else
+        TypeString := 'Beta';
+    end;
+
+    CbEmulators.AddItem(
+      Format('%s (%s)', [Emulator.Version, TypeString]),
+      Emulator
+    );
+  end;
 end;
 
 class procedure TAddMachineForm.Execute(AOwner: TComponent);

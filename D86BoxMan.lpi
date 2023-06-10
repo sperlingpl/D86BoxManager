@@ -102,6 +102,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="JvValidatorsLazR"/>
+      </Item>
+      <Item>
         <PackageName Value="laz.virtualtreeview_package"/>
       </Item>
       <Item>
@@ -151,6 +154,19 @@
         <Filename Value="manager\uconfigmanager.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uConfigManager"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\uaddemulatorform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddEmulatorForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uAddEmulatorForm"/>
+      </Unit>
+      <Unit>
+        <Filename Value="utils\uexeinfohelper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uExeInfoHelper"/>
       </Unit>
     </Units>
   </ProjectOptions>

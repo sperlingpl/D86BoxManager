@@ -37,6 +37,7 @@ type
     Groupbox1: Tgroupbox;
     Lazvirtualstringtree1: Tlazvirtualstringtree;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   Private
 
@@ -52,13 +53,18 @@ implementation
 {$R *.lfm}
 
 uses
-  uAddMachineForm, uConfigManager, uVMManager, fpjson;
+  uAddMachineForm, uConfigManager, uEmulatorsForm;
 
 { TMainForm }
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   TAddMachineForm.Execute(nil);
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+begin
+  TEmulatorsForm.Execute(nil);
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);

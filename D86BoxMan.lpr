@@ -29,7 +29,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, uMainForm, uAddMachineForm, uVMManager, uPathHelper, uEmulatorsForm,
-  uConfigManager
+  uConfigManager, uAddEmulatorForm, uExeInfoHelper
   { you can add units after this };
 
 {$R *.res}
@@ -38,7 +38,7 @@ begin
   RequireDerivedFormResource := True;
   Application.Scaled := True;
   Application.Initialize;
-  Application.CreateForm(TMainForm, Mainform);
+  Application.CreateForm(TMainform, Mainform);
   Application.Run;
 end.
 

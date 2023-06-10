@@ -33,7 +33,11 @@ type
   end;
 
   TEmulator = class
-
+  public
+    Release: Boolean;
+    Imported: Boolean;
+    Path: String;
+    Version: String;
   end;
 
   { TVMManager }
@@ -41,6 +45,7 @@ type
   TVMManager = class
   public
     Machines: specialize TObjectList<TVirtualMachine>;
+    Emulators: specialize TObjectList<TEmulator>;
 
     constructor Create;
     destructor Destroy; override;
@@ -62,15 +67,22 @@ const
   MachinesNode = 'machines';
   NameNode = 'name';
   DescriptionNode = 'description';
+  EmulatorsNode = 'emulators';
+  EmulatorPathNode = 'path';
+  EmulatorImportNode = 'imported';
+  EmulatorReleaseNode = 'release';
+  EmulatorVersionNode = 'version';
 
 constructor TVMManager.Create;
 begin
   Machines := specialize TObjectList<TVirtualMachine>.Create;
+  Emulators := specialize TObjectList<TEmulator>.Create;
 end;
 
 destructor TVMManager.Destroy;
 begin
   Machines.Free;
+  Emulators.Free;
 
   inherited Destroy;
 end;
@@ -90,45 +102,77 @@ end;
 
 function TVMManager.Serialize: TJSONObject;
 var
-  JsonObject: TJSONObject;
+  MainJsonObject: TJSONObject;
   Machine: TVirtualMachine;
-  MachinesArray: TJSONArray;
-  VMObject: TJSONObject;
+  Emulator: TEmulator;
+  JsonArray: TJSONArray;
+  JsonObject: TJSONObject;
 begin
-  JsonObject := TJSONObject.Create;
-  MachinesArray := TJSONArray.Create;
+  MainJsonObject := TJSONObject.Create;
+  JsonArray := TJSONArray.Create;
 
   for Machine in Machines do
   begin
-    VMObject := TJSONObject.Create;
-    VMObject.Add(NameNode, Machine.Name);
-    VMObject.Add(DescriptionNode, Machine.Description);
-    MachinesArray.Add(VMObject);
+    JsonObject := TJSONObject.Create;
+    JsonObject.Add(NameNode, Machine.Name);
+    JsonObject.Add(DescriptionNode, Machine.Description);
+    JsonArray.Add(JsonObject);
   end;
 
-  JsonObject.Add(MachinesNode, MachinesArray);
+  MainJsonObject.Add(MachinesNode, JsonArray);
 
-  Result := JsonObject;
+  JsonArray := TJSONArray.Create;
+
+  for Emulator in Emulators do
+  begin
+    JsonObject := TJSONObject.Create;
+    JsonObject.Add(EmulatorPathNode, Emulator.Path);
+    JsonObject.Add(EmulatorImportNode, Emulator.Imported);
+    JsonObject.Add(EmulatorReleaseNode, Emulator.Release);
+    JsonObject.Add(EmulatorVersionNode, Emulator.Version);
+    JsonArray.Add(JsonObject);
+  end;
+
+  MainJsonObject.Add(EmulatorsNode, JsonArray);
+
+  Result := MainJsonObject;
 end;
 
 procedure TVMManager.Deserialize(AJsonObject: TJSONObject);
 var
-  MachinesArray: TJSONArray;
-  MachineEnum: TJSONEnum;
-  MachineObject: TJSONObject;
+  JsonArray: TJSONArray;
+  JsonEnum: TJSONEnum;
+  JsonObject: TJSONObject;
   Machine: TVirtualMachine;
+  Emulator: TEmulator;
 begin
-  MachinesArray := TJSONArray(AJsonObject.FindPath(MachinesNode));
+  JsonArray := TJSONArray(AJsonObject.FindPath(MachinesNode));
 
-  if Assigned(MachinesArray) then
+  if Assigned(JsonArray) then
   begin
-    for MachineEnum in MachinesArray do
+    for JsonEnum in JsonArray do
     begin
-      MachineObject := TJSONObject(MachineEnum.Value);
+      JsonObject := TJSONObject(JsonEnum.Value);
       Machine := TVirtualMachine.Create;
-      Machine.Name := MachineObject.Get(NameNode);
-      Machine.Description := MachineObject.Get(DescriptionNode);
+      Machine.Name := JsonObject.Get(NameNode);
+      Machine.Description := JsonObject.Get(DescriptionNode);
       Machines.Add(Machine);
+    end;
+  end;
+
+  JsonArray := TJSONArray(AJsonObject.FindPath(EmulatorsNode));
+
+  if Assigned(JsonArray) then
+  begin
+    for JsonEnum in JsonArray do
+    begin
+      JsonObject := TJSONObject(JsonEnum.Value);
+      Emulator := TEmulator.Create;
+      Emulator.Path := JsonObject.Get(EmulatorPathNode);
+      Emulator.Release := JsonObject.Get(EmulatorReleaseNode);
+      Emulator.Imported := JsonObject.Get(EmulatorImportNode);
+      Emulator.Version := JsonObject.Get(EmulatorVersionNode);
+      Emulators.Add(Emulator);
     end;
   end;
 end;

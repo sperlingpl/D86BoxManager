@@ -1,8 +1,79 @@
 object EmulatorsForm: TEmulatorsForm
-  Left = 256
-  Height = 252
-  Top = 131
-  Width = 471
-  Caption = 'EmulatorsForm'
+  Left = 317
+  Height = 311
+  Top = 156
+  Width = 452
+  Caption = 'Emulators'
+  ClientHeight = 311
+  ClientWidth = 452
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
   LCLVersion = '2.2.6.0'
+  object BtnClose: TButton
+    Left = 369
+    Height = 25
+    Top = 280
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Close'
+    OnClick = BtnCloseClick
+    TabOrder = 0
+  end
+  object LvEmulators: TListView
+    Left = 8
+    Height = 214
+    Top = 8
+    Width = 434
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Version'
+        Width = 100
+      end    
+      item
+        Caption = 'Type'
+        Width = 100
+      end    
+      item
+        Caption = 'Path'
+        Width = 200
+      end>
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 1
+    ViewStyle = vsReport
+    OnChange = LvEmulatorsChange
+    OnDblClick = LvEmulatorsDblClick
+  end
+  object BtnAdd: TButton
+    Left = 8
+    Height = 25
+    Top = 232
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Add'
+    OnClick = BtnAddClick
+    TabOrder = 2
+  end
+  object BtnRemove: TButton
+    Left = 88
+    Height = 25
+    Top = 232
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Remove'
+    OnClick = BtnRemoveClick
+    TabOrder = 3
+  end
+  object BtnShowFolder: TButton
+    Left = 208
+    Height = 25
+    Top = 232
+    Width = 112
+    Caption = 'Show folder'
+    OnClick = BtnShowFolderClick
+    TabOrder = 4
+  end
 end

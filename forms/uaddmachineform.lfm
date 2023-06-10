@@ -1,110 +1,104 @@
 object AddMachineForm: TAddMachineForm
-  Left = 261
-  Height = 242
-  Top = 151
+  Left = 636
+  Height = 252
+  Top = 272
   Width = 453
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'AddMachineForm'
-  ClientHeight = 242
+  ClientHeight = 252
   ClientWidth = 453
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '2.2.6.0'
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 110
+    Height = 128
     Top = 8
     Width = 437
     Anchors = [akTop, akLeft, akRight]
-    Caption = 'GroupBox1'
-    ClientHeight = 90
+    Caption = 'Virtual machine'
+    ClientHeight = 108
     ClientWidth = 433
     TabOrder = 0
-    object LblName: TLabel
-      AnchorSideRight.Side = asrCenter
+    object EdtName: TLabeledEdit
       Left = 8
-      Height = 15
-      Top = 14
-      Width = 48
-      Caption = 'LblName'
-      ParentColor = False
-    end
-    object LblDescription: TLabel
-      Left = 8
-      Height = 15
-      Top = 52
-      Width = 76
-      Caption = 'LblDescription'
-      ParentColor = False
-    end
-    object EdtName: TEdit
-      AnchorSideRight.Side = asrCenter
-      Left = 112
       Height = 23
-      Top = 8
-      Width = 312
-      OnChange = EdtNameChange
+      Top = 24
+      Width = 416
+      EditLabel.Height = 15
+      EditLabel.Width = 416
+      EditLabel.Caption = 'Name:'
+      EditLabel.ParentColor = False
       TabOrder = 0
+      OnChange = EdtNameChange
     end
-    object EdtDescription: TEdit
-      Left = 112
+    object EdtDescription: TLabeledEdit
+      Left = 8
       Height = 23
-      Top = 46
-      Width = 312
+      Top = 72
+      Width = 416
+      EditLabel.Height = 15
+      EditLabel.Width = 416
+      EditLabel.Caption = 'Description:'
+      EditLabel.ParentColor = False
       TabOrder = 1
     end
   end
   object BtnCancel: TButton
     Left = 368
     Height = 25
-    Top = 208
+    Top = 219
     Width = 75
-    Caption = 'BtnCancel'
+    Anchors = [akRight, akBottom]
+    Caption = 'Cancel'
     OnClick = BtnCancelClick
     TabOrder = 1
   end
   object BtnOk: TButton
     Left = 288
     Height = 25
-    Top = 208
+    Top = 219
     Width = 75
-    Caption = 'BtnOk'
+    Anchors = [akRight, akBottom]
+    Caption = 'OK'
     OnClick = BtnOkClick
     TabOrder = 2
   end
   object GroupBox2: TGroupBox
     Left = 8
-    Height = 72
-    Top = 120
+    Height = 64
+    Top = 144
     Width = 435
-    Caption = 'GroupBox2'
-    ClientHeight = 52
+    Caption = 'Emulator'
+    ClientHeight = 44
     ClientWidth = 431
     TabOrder = 3
     object LblEmulators: TLabel
       Left = 8
       Height = 15
-      Top = 22
-      Width = 69
-      Caption = 'LblEmulators'
+      Top = 13
+      Width = 56
+      Caption = 'Emulators:'
       ParentColor = False
     end
     object CbEmulators: TComboBox
       Left = 112
       Height = 23
-      Top = 16
+      Top = 9
       Width = 216
       ItemHeight = 15
+      OnChange = CbEmulatorsChange
       Style = csDropDownList
       TabOrder = 0
     end
     object BtnAddEmulator: TButton
       Left = 336
       Height = 25
-      Top = 15
+      Top = 8
       Width = 88
-      Caption = 'BtnAddEmulator'
+      Caption = 'Add new'
+      OnClick = BtnAddEmulatorClick
       TabOrder = 1
     end
   end
