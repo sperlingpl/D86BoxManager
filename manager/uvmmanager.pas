@@ -40,10 +40,14 @@ type
   TVirtualMachine = class
   private
     CheckRunningThread: TCheckRunningThread;
+
+    procedure OnProcessExit;
   public
     Name: String;
     Description: String;
     Emulator: TEmulator;
+
+    OnStopped: procedure(AVM: TVirtualMachine) of object;
 
     destructor Destroy; override;
 
@@ -93,6 +97,11 @@ const
 
 { TVirtualMachine }
 
+procedure TVirtualMachine.OnProcessExit;
+begin
+  OnStopped(Self);
+end;
+
 destructor TVirtualMachine.Destroy;
 begin
   inherited Destroy;
@@ -118,6 +127,7 @@ begin
   Process.Execute;
 
   CheckRunningThread := TCheckRunningThread.Create(True);
+  CheckRunningThread.OnProcessExit := @OnProcessExit;
   CheckRunningThread.FreeOnTerminate := True;
   CheckRunningThread.Process := Process;
   CheckRunningThread.Start;

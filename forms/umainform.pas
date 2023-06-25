@@ -24,7 +24,7 @@ interface
 
 uses
   Classes, Sysutils, Forms, Controls, Graphics, Dialogs, StdCtrls, Menus,
-  laz.VirtualTrees;
+  laz.VirtualTrees, uVMManager;
 
 type
 
@@ -58,6 +58,7 @@ type
     procedure FillData;
     procedure RunVM;
     procedure ConfigureVM;
+    procedure OnVMStopped(AVM: TVirtualMachine);
   Public
 
   end;
@@ -70,7 +71,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uAddMachineForm, uConfigManager, uEmulatorsForm, uVMManager;
+  uAddMachineForm, uConfigManager, uEmulatorsForm;
 
 type
   PTreeData = ^TTreeData;
@@ -164,6 +165,8 @@ var
 begin
   for Machine in VMManager.Machines do
   begin
+    Machine.OnStopped := @OnVMStopped;
+
     Node := VST.AddChild(nil);
     Data := VST.GetNodeData(Node);
     Data^.Column0 := Machine.Name;
@@ -205,6 +208,28 @@ begin
       Data^.Machine.Configure;
     end;
   end;
+end;
+
+procedure TMainForm.OnVMStopped(AVM: TVirtualMachine);
+var
+  Node: PVirtualNode;
+  Data: PTreeData;
+begin
+  Node := VST.GetFirst;
+  repeat
+    if Assigned(Node) then
+    begin
+      Data := VST.GetNodeData(Node);
+      if Data^.Machine = AVM then
+      begin
+        Data^.Column1 := 'Stopped';
+        VST.Refresh;
+        Exit;
+      end;
+
+      Node := VST.GetNext(Node);
+    end;
+  until not Assigned(Node);
 end;
 
 end.

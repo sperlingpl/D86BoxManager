@@ -30,6 +30,7 @@ uses
 type
   TCheckRunningThread = class(TThread)
     Process: TProcess;
+    OnProcessExit: procedure of object;
 
     procedure Execute; override;
   end;
@@ -43,13 +44,16 @@ begin
   while Assigned(Process) and Process.Active do
   begin
 
-    Sleep(1000);
+    Sleep(100);
   end;
 
   if Assigned(Process) then
   begin
     Process.Free;
     Process := nil;
+
+    if Assigned(OnProcessExit) then
+      OnProcessExit;
   end;
 end;
 
