@@ -23,26 +23,40 @@ unit uVMManager;
 interface
 
 uses
-  Classes, SysUtils, Generics.Collections, fpjson;
+  Classes, SysUtils, Generics.Collections, fpjson, process, uProcessMonitor;
 
 type
-  TVirtualMachine = class
-  public
-    Name: String;
-    Description: String;
-  end;
-
   TEmulator = class
   public
+    ID: String;
     Release: Boolean;
     Imported: Boolean;
     Path: String;
     Version: String;
   end;
 
+  { TVirtualMachine }
+
+  TVirtualMachine = class
+  private
+    CheckRunningThread: TCheckRunningThread;
+  public
+    Name: String;
+    Description: String;
+    Emulator: TEmulator;
+
+    destructor Destroy; override;
+
+    procedure Run;
+    procedure Configure;
+  end;
+
   { TVMManager }
 
   TVMManager = class
+  private
+    function GetEmulatorById(AID: String): TEmulator;
+
   public
     Machines: specialize TObjectList<TVirtualMachine>;
     Emulators: specialize TObjectList<TEmulator>;
@@ -51,6 +65,7 @@ type
     destructor Destroy; override;
 
     procedure Add(const AMachine: TVirtualMachine);
+    procedure AddEmulator(AEmulator: TEmulator);
 
     function Serialize: TJSONObject;
     procedure Deserialize(AJsonObject: TJSONObject);
@@ -61,17 +76,91 @@ var
 
 implementation
 
-{ TVMManager }
+uses
+  uPathHelper;
 
 const
   MachinesNode = 'machines';
   NameNode = 'name';
   DescriptionNode = 'description';
+  MachineEmulatorId = 'emulator';
   EmulatorsNode = 'emulators';
   EmulatorPathNode = 'path';
   EmulatorImportNode = 'imported';
   EmulatorReleaseNode = 'release';
   EmulatorVersionNode = 'version';
+  EmulatorIdNode = 'id';
+
+{ TVirtualMachine }
+
+destructor TVirtualMachine.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TVirtualMachine.Run;
+var
+  Process: TProcess;
+  ConfigPath: String;
+begin
+  Process := TProcess.Create(nil);
+  Process.Executable := Emulator.Path;
+
+  ConfigPath := ConcatPaths([GetAppDataFolderPath, Name]);
+  if not DirectoryExists(ConfigPath) then
+    CreateDir(ConfigPath);
+
+  if not FileExists(ConcatPaths([ConfigPath, '86box.cfg'])) then
+    Process.Parameters.Add('--settings --vmpath "%s"', [ConfigPath])
+  else
+    Process.Parameters.Add('--vmpath "%s"', [ConfigPath]);
+
+  Process.Execute;
+
+  CheckRunningThread := TCheckRunningThread.Create(True);
+  CheckRunningThread.FreeOnTerminate := True;
+  CheckRunningThread.Process := Process;
+  CheckRunningThread.Start;
+end;
+
+procedure TVirtualMachine.Configure;
+var
+  Process: TProcess;
+  ConfigPath: String;
+begin
+  Process := TProcess.Create(nil);
+  Process.Executable := Emulator.Path;
+
+  ConfigPath := ConcatPaths([GetAppDataFolderPath, Name]);
+  if not DirectoryExists(ConfigPath) then
+    CreateDir(ConfigPath);
+
+  Process.Parameters.Add('--settings --vmpath "%s"', [ConfigPath]);
+  Process.Execute;
+
+  CheckRunningThread := TCheckRunningThread.Create(True);
+  CheckRunningThread.FreeOnTerminate := True;
+  CheckRunningThread.Process := Process;
+  CheckRunningThread.Start;
+end;
+
+{ TVMManager }
+
+function TVMManager.GetEmulatorById(AID: String): TEmulator;
+var
+  Emulator: TEmulator;
+begin
+  Result := nil;
+
+  for Emulator in Emulators do
+  begin
+    if Emulator.ID = AID then
+    begin
+      Result := Emulator;
+      Exit;
+    end;
+  end;
+end;
 
 constructor TVMManager.Create;
 begin
@@ -100,6 +189,12 @@ begin
   Machines.Add(AMachine);
 end;
 
+procedure TVMManager.AddEmulator(AEmulator: TEmulator);
+begin
+  AEmulator.ID := TGuid.NewGuid.ToString;
+  Emulators.Add(AEmulator);
+end;
+
 function TVMManager.Serialize: TJSONObject;
 var
   MainJsonObject: TJSONObject;
@@ -116,6 +211,7 @@ begin
     JsonObject := TJSONObject.Create;
     JsonObject.Add(NameNode, Machine.Name);
     JsonObject.Add(DescriptionNode, Machine.Description);
+    JsonObject.Add(MachineEmulatorId, Machine.Emulator.ID);
     JsonArray.Add(JsonObject);
   end;
 
@@ -126,6 +222,7 @@ begin
   for Emulator in Emulators do
   begin
     JsonObject := TJSONObject.Create;
+    JsonObject.Add(EmulatorIdNode, Emulator.ID);
     JsonObject.Add(EmulatorPathNode, Emulator.Path);
     JsonObject.Add(EmulatorImportNode, Emulator.Imported);
     JsonObject.Add(EmulatorReleaseNode, Emulator.Release);
@@ -146,6 +243,23 @@ var
   Machine: TVirtualMachine;
   Emulator: TEmulator;
 begin
+  JsonArray := TJSONArray(AJsonObject.FindPath(EmulatorsNode));
+
+  if Assigned(JsonArray) then
+  begin
+    for JsonEnum in JsonArray do
+    begin
+      JsonObject := TJSONObject(JsonEnum.Value);
+      Emulator := TEmulator.Create;
+      Emulator.ID := JsonObject.Get(EmulatorIdNode);
+      Emulator.Path := JsonObject.Get(EmulatorPathNode);
+      Emulator.Release := JsonObject.Get(EmulatorReleaseNode);
+      Emulator.Imported := JsonObject.Get(EmulatorImportNode);
+      Emulator.Version := JsonObject.Get(EmulatorVersionNode);
+      Emulators.Add(Emulator);
+    end;
+  end;
+
   JsonArray := TJSONArray(AJsonObject.FindPath(MachinesNode));
 
   if Assigned(JsonArray) then
@@ -156,23 +270,8 @@ begin
       Machine := TVirtualMachine.Create;
       Machine.Name := JsonObject.Get(NameNode);
       Machine.Description := JsonObject.Get(DescriptionNode);
+      Machine.Emulator := GetEmulatorById(JsonObject.Get(MachineEmulatorId));
       Machines.Add(Machine);
-    end;
-  end;
-
-  JsonArray := TJSONArray(AJsonObject.FindPath(EmulatorsNode));
-
-  if Assigned(JsonArray) then
-  begin
-    for JsonEnum in JsonArray do
-    begin
-      JsonObject := TJSONObject(JsonEnum.Value);
-      Emulator := TEmulator.Create;
-      Emulator.Path := JsonObject.Get(EmulatorPathNode);
-      Emulator.Release := JsonObject.Get(EmulatorReleaseNode);
-      Emulator.Imported := JsonObject.Get(EmulatorImportNode);
-      Emulator.Version := JsonObject.Get(EmulatorVersionNode);
-      Emulators.Add(Emulator);
     end;
   end;
 end;

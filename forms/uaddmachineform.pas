@@ -83,6 +83,7 @@ begin
   try
     Machine.Name := Trim(EdtName.Text);
     Machine.Description := EdtDescription.Text;
+    Machine.Emulator := TEmulator(CbEmulators.Items.Objects[CbEmulators.ItemIndex]);
     VMManager.Add(Machine);
     ConfigManager.Save;
     Close;

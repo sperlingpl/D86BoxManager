@@ -72,6 +72,7 @@ object EmulatorsForm: TEmulatorsForm
     Height = 25
     Top = 232
     Width = 112
+    Anchors = [akLeft, akBottom]
     Caption = 'Show folder'
     OnClick = BtnShowFolderClick
     TabOrder = 4

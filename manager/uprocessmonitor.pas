@@ -16,29 +16,42 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 }
 
-program D86BoxMan;
+unit uProcessMonitor;
 
 {$mode ObjFPC}{$H+}
 
+interface
+
 uses
-  {$IFDEF UNIX}
-  Cthreads,
-  {$ENDIF}
-  {$IFDEF HASAMIGA}
-  Athreads,
-  {$ENDIF}
-  Interfaces, // this includes the LCL widgetset
-  Forms, uMainForm, uAddMachineForm, uVMManager, uPathHelper, uEmulatorsForm,
-  uConfigManager, uAddEmulatorForm, uExeInfoHelper, uProcessMonitor
-  { you can add units after this };
+  process, Classes;
 
-{$R *.res}
+{ TCheckRunningThread }
 
+type
+  TCheckRunningThread = class(TThread)
+    Process: TProcess;
+
+    procedure Execute; override;
+  end;
+
+implementation
+
+{ TCheckRunningThread }
+
+procedure TCheckRunningThread.Execute;
 begin
-  RequireDerivedFormResource := True;
-  Application.Scaled := True;
-  Application.Initialize;
-  Application.CreateForm(TMainform, Mainform);
-  Application.Run;
+  while Assigned(Process) and Process.Active do
+  begin
+
+    Sleep(1000);
+  end;
+
+  if Assigned(Process) then
+  begin
+    Process.Free;
+    Process := nil;
+  end;
+end;
+
 end.
 

@@ -1,9 +1,9 @@
 object MainForm: TMainForm
-  Left = 615
+  Left = 260
   Height = 460
-  Top = 238
+  Top = 273
   Width = 640
-  Caption = 'MainForm'
+  Caption = 'D86Box Manager'
   ClientHeight = 460
   ClientWidth = 640
   OnCreate = FormCreate
@@ -35,17 +35,36 @@ object MainForm: TMainForm
     Caption = 'Button3'
     TabOrder = 2
   end
-  object LazVirtualStringTree1: TLazVirtualStringTree
+  object VST: TLazVirtualStringTree
     Left = 8
     Height = 391
-    Top = 56
+    Top = 57
     Width = 413
     Anchors = [akTop, akLeft, akRight, akBottom]
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
-    Header.Columns = <>
-    Header.MainColumn = -1
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Name'
+        Width = 200
+      end    
+      item
+        Position = 1
+        Text = 'Status'
+        Width = 100
+      end>
+    Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    PopupMenu = PMMachines
     TabOrder = 3
+    TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toFullRowSelect]
+    OnChange = VSTChange
+    OnDblClick = VSTDblClick
+    OnFocusChanged = VSTFocusChanged
+    OnFreeNode = VSTFreeNode
+    OnGetText = VSTGetText
+    OnGetNodeDataSize = VSTGetNodeDataSize
   end
   object GroupBox1: TGroupBox
     Left = 426
@@ -54,5 +73,17 @@ object MainForm: TMainForm
     Width = 207
     Anchors = [akTop, akRight, akBottom]
     TabOrder = 4
+  end
+  object PMMachines: TPopupMenu
+    Left = 64
+    Top = 128
+    object MIRun: TMenuItem
+      Caption = 'Run'
+      OnClick = MIRunClick
+    end
+    object MIConfigure: TMenuItem
+      Caption = 'Configure'
+      OnClick = MIConfigureClick
+    end
   end
 end

@@ -96,7 +96,7 @@ begin
     Emulator.Path := EdtPath.Text;
     Emulator.Release := False;
     Emulator.Version := ExeVersionInfo.Version;
-    VMManager.Emulators.Add(Emulator);
+    VMManager.AddEmulator(Emulator);
     ConfigManager.Save;
   finally
     ExeVersionInfo.Free;

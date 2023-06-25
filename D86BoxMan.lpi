@@ -168,6 +168,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uExeInfoHelper"/>
       </Unit>
+      <Unit>
+        <Filename Value="manager\uprocessmonitor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uProcessMonitor"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
