@@ -9,6 +9,7 @@ object AddMachineForm: TAddMachineForm
   ClientHeight = 252
   ClientWidth = 453
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '2.2.6.0'
   object GroupBox1: TGroupBox

@@ -23,7 +23,8 @@ unit uAddMachineForm;
 interface
 
 uses
-  Classes, Sysutils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls;
+  Classes, Sysutils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+  uVMManager;
 
 type
 
@@ -45,11 +46,16 @@ type
     procedure CbEmulatorsChange(Sender: TObject);
     procedure EdtNameChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   Private
+    FMachine: TVirtualMachine;
+
     procedure Validate;
     procedure FillEmulators;
   Public
-    class procedure Execute(AOwner: TComponent);
+    procedure SetMachine(AMachine: TVirtualMachine);
+
+    class procedure Execute(AOwner: TComponent; AMachine: TVirtualMachine = nil);
   end;
 
 implementation
@@ -57,7 +63,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uVMManager, uConfigManager, uAddEmulatorForm;
+  uConfigManager, uAddEmulatorForm;
 
 var
   AddMachineForm: TAddMachineForm;
@@ -112,6 +118,29 @@ begin
   Validate;
 end;
 
+procedure TAddMachineForm.FormShow(Sender: TObject);
+var
+  Emulator: TEmulator;
+  I: Integer;
+begin
+  if Assigned(FMachine) then
+  begin
+    EdtName.Text := FMachine.Name;
+    EdtDescription.Text := FMachine.Description;
+
+    for I := 0 to CbEmulators.Items.Count - 1 do
+    begin
+      Emulator := TEmulator(CbEmulators.Items.Objects[I]);
+      if Emulator = FMachine.Emulator then
+      begin
+        CbEmulators.ItemIndex := I;
+      end;
+    end;
+
+    Validate;
+  end;
+end;
+
 procedure TAddMachineForm.Validate;
 begin
   BtnOk.Enabled := (Trim(EdtName.Text) <> '') and (CbEmulators.ItemIndex >= 0);
@@ -144,9 +173,15 @@ begin
   end;
 end;
 
-class procedure TAddMachineForm.Execute(AOwner: TComponent);
+procedure TAddMachineForm.SetMachine(AMachine: TVirtualMachine);
+begin
+  FMachine := AMachine;
+end;
+
+class procedure TAddMachineForm.Execute(AOwner: TComponent; AMachine: TVirtualMachine = nil);
 begin
   AddMachineForm := TAddMachineForm.Create(AOwner);
+  AddMachineForm.SetMachine(AMachine);
   AddMachineForm.ShowModal;
   AddMachineForm.Free;
 end;

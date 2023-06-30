@@ -35,13 +35,21 @@ type
     Button2: Tbutton;
     Button3: Tbutton;
     Groupbox1: Tgroupbox;
+    LblTitle: TLabel;
+    LblDescription: TLabel;
+    MIDelete: TMenuItem;
+    MIEdit: TMenuItem;
+    Separator1: TMenuItem;
     MIRun: TMenuItem;
     MIConfigure: TMenuItem;
     PMMachines: TPopupMenu;
+    Separator2: TMenuItem;
     VST: Tlazvirtualstringtree;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure MIDeleteClick(Sender: TObject);
+    procedure MIEditClick(Sender: TObject);
     procedure MIConfigureClick(Sender: TObject);
     procedure MIRunClick(Sender: TObject);
     procedure VSTChange(Sender: TBaseVirtualTree;
@@ -59,6 +67,7 @@ type
     procedure RunVM;
     procedure ConfigureVM;
     procedure OnVMStopped(AVM: TVirtualMachine);
+    function GetSelectedVMData: TVirtualMachine;
   Public
 
   end;
@@ -99,6 +108,42 @@ begin
   FillData;
 end;
 
+procedure TMainForm.MIDeleteClick(Sender: TObject);
+var
+  VM: TVirtualMachine;
+begin
+  VM := GetSelectedVMData;
+
+  if Assigned(VM) then
+  begin
+    if MessageDlg(
+      'Are you sure?',
+      'Do you really want to delete this Virtual Machine?',
+      mtWarning,
+      mbYesNo,
+      0
+    ) = mrYes then
+    begin
+      VMManager.Remove(VM);
+      ConfigManager.Save;
+      FillData;
+    end;
+  end;
+end;
+
+procedure TMainForm.MIEditClick(Sender: TObject);
+var
+  VM: TVirtualMachine;
+begin
+  VM := GetSelectedVMData;
+  if Assigned(VM) then
+  begin
+    begin
+      TAddMachineForm.Execute(nil, VM);
+    end;
+  end;
+end;
+
 procedure TMainForm.MIConfigureClick(Sender: TObject);
 begin
   ConfigureVM;
@@ -111,8 +156,17 @@ end;
 
 procedure TMainForm.VSTChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+var
+  Data: PTreeData;
 begin
   VST.Refresh;
+
+  if Assigned(Node) then
+  begin
+    Data := VST.GetNodeData(Node);
+    LblTitle.Caption := Data^.Machine.Name;
+    LblDescription.Caption := Data^.Machine.Description;
+  end;
 end;
 
 procedure TMainForm.VSTDblClick(Sender: TObject);
@@ -163,6 +217,8 @@ var
   Data: PTreeData;
   Node: PVirtualNode;
 begin
+  VST.Clear;
+
   for Machine in VMManager.Machines do
   begin
     Machine.OnStopped := @OnVMStopped;
@@ -196,17 +252,13 @@ end;
 
 procedure TMainForm.ConfigureVM;
 var
-  Node: PVirtualNode;
-  Data: PTreeData;
+  VM: TVirtualMachine;
 begin
-  Node := VST.GetFirstSelected;
-  if Assigned(Node) then
+  VM := GetSelectedVMData;
+
+  if Assigned(VM) then
   begin
-    Data := VST.GetNodeData(Node);
-    if Assigned(Data) then
-    begin
-      Data^.Machine.Configure;
-    end;
+    VM.Configure;
   end;
 end;
 
@@ -230,6 +282,22 @@ begin
       Node := VST.GetNext(Node);
     end;
   until not Assigned(Node);
+end;
+
+function TMainForm.GetSelectedVMData: TVirtualMachine;
+var
+  Node: PVirtualNode;
+  Data: PTreeData;
+begin
+  Result := nil;
+
+  Node := VST.GetFirstSelected;
+  if Assigned(Node) then
+  begin
+    Data := VST.GetNodeData(Node);
+    if Assigned(Data) then
+      Result := Data^.Machine;
+  end;
 end;
 
 end.

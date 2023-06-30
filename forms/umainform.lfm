@@ -2,10 +2,10 @@ object MainForm: TMainForm
   Left = 260
   Height = 460
   Top = 273
-  Width = 640
+  Width = 670
   Caption = 'D86Box Manager'
   ClientHeight = 460
-  ClientWidth = 640
+  ClientWidth = 670
   OnCreate = FormCreate
   LCLVersion = '2.2.6.0'
   object Button1: TButton
@@ -27,7 +27,7 @@ object MainForm: TMainForm
     TabOrder = 1
   end
   object Button3: TButton
-    Left = 557
+    Left = 587
     Height = 25
     Top = 7
     Width = 75
@@ -39,7 +39,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 391
     Top = 57
-    Width = 413
+    Width = 427
     Anchors = [akTop, akLeft, akRight, akBottom]
     DefaultText = 'Node'
     Header.AutoSizeIndex = 0
@@ -67,12 +67,40 @@ object MainForm: TMainForm
     OnGetNodeDataSize = VSTGetNodeDataSize
   end
   object GroupBox1: TGroupBox
-    Left = 426
+    Left = 440
     Height = 400
     Top = 48
-    Width = 207
+    Width = 223
     Anchors = [akTop, akRight, akBottom]
+    ClientHeight = 380
+    ClientWidth = 219
     TabOrder = 4
+    object LblTitle: TLabel
+      Left = 8
+      Height = 21
+      Top = 8
+      Width = 203
+      Align = alTop
+      BorderSpacing.Around = 8
+      Caption = 'Title'
+      Font.CharSet = EASTEUROPE_CHARSET
+      Font.Height = -16
+      Font.Pitch = fpVariable
+      Font.Quality = fqDraft
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object LblDescription: TLabel
+      Left = 8
+      Height = 15
+      Top = 37
+      Width = 203
+      Align = alTop
+      BorderSpacing.Around = 8
+      Caption = 'Description'
+      ParentColor = False
+    end
   end
   object PMMachines: TPopupMenu
     Left = 64
@@ -84,6 +112,20 @@ object MainForm: TMainForm
     object MIConfigure: TMenuItem
       Caption = 'Configure'
       OnClick = MIConfigureClick
+    end
+    object Separator1: TMenuItem
+      Caption = '-'
+    end
+    object MIDelete: TMenuItem
+      Caption = 'Delete'
+      OnClick = MIDeleteClick
+    end
+    object Separator2: TMenuItem
+      Caption = '-'
+    end
+    object MIEdit: TMenuItem
+      Caption = 'Edit'
+      OnClick = MIEditClick
     end
   end
 end

@@ -69,7 +69,9 @@ type
     destructor Destroy; override;
 
     procedure Add(const AMachine: TVirtualMachine);
+    procedure Update(const AMachine: TVirtualMachine);
     procedure AddEmulator(AEmulator: TEmulator);
+    procedure Remove(const AMachine: TVirtualMachine);
 
     function Serialize: TJSONObject;
     procedure Deserialize(AJsonObject: TJSONObject);
@@ -199,10 +201,21 @@ begin
   Machines.Add(AMachine);
 end;
 
+procedure TVMManager.Update(const AMachine: TVirtualMachine);
+begin
+
+end;
+
 procedure TVMManager.AddEmulator(AEmulator: TEmulator);
 begin
   AEmulator.ID := TGuid.NewGuid.ToString;
   Emulators.Add(AEmulator);
+end;
+
+procedure TVMManager.Remove(const AMachine: TVirtualMachine);
+begin
+  DeleteDirectory(ConcatPaths([GetAppDataFolderPath, AMachine.Name]));
+  Machines.Remove(AMachine);
 end;
 
 function TVMManager.Serialize: TJSONObject;
